@@ -1,0 +1,87 @@
+Table Users {
+  id int [pk, increment]
+  email varchar [not null, unique]
+  password varchar [not null]
+}
+
+Table Roles {
+  id int [pk, increment]
+  name varchar [not null, unique]
+}
+
+Table UserRoles {
+  id int [pk, increment]
+  user_id int [not null, ref: > Users.id]
+  role_id int [not null, ref: > Roles.id]
+}
+
+Table Stadiums {
+  id int [pk, increment]
+  name varchar [not null, unique]
+  location varchar [not null]
+  capacity int
+}
+
+Table Slots {
+  id int [pk, increment]
+  start_time datetime [not null]
+  end_time datetime [not null]
+}
+
+Table StadiumSlots {
+  id int [pk, increment]
+  stadium_id int [not null, ref: > Stadiums.id]
+  slot_id int [not null, ref: > Slots.id]
+  available boolean [default: true]
+}
+
+Table Bookings {
+  id int [pk, increment]
+  stadium_slot_id int [not null, ref: -StadiumSlots.id]
+  user_id int [not null, ref: -Users.id]
+  booking_date datetime [not null]
+  status boolean [default: true]
+}
+
+Table Teams {
+  id int [pk, increment]
+  name varchar [not null, unique]
+  manager_id int [not null, ref: -Players.id]
+  captain_id int [not null, ref: -Players.id]
+  booking_id int [not null, ref: > Bookings.id]
+}
+
+Table Players {
+  id int [pk, increment]
+  user_id int [not null, unique, ref: -Users.id]
+  name varchar [not null]
+  age int
+  gender varchar
+  player_type varchar
+}
+
+
+Table TeamPlayers {
+  id int [pk, increment]
+  team_id int [not null, ref: > Teams.id]
+  player_id int [not null, ref: > Players.id]
+  player_runs int
+  player_wickets int
+  player_catches int
+  player_balls_faced int
+  player_balls_delivered int
+  catches int
+  
+  
+  
+}
+
+
+Mappings Explanation:
+User-Roles(many-many) --userRoles
+Stadium-slots(many-many) -- StadiumSlots
+team-players(many-many)-->one team can have multiple players,one player can be in many teams) --extra table(teamPlayers)
+Bookings-Teams(one to many)-->one booking can have multiple teams(2 teams)
+Booking-Users(one to one)--> one booking can have one organizer(user_id)
+Teams-Players(one to one) -->(one team can have one manager_id(player_id)
+Teams-players(one to one)--. (one team can have one captian_id(player_id)
